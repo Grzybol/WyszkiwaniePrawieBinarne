@@ -29,6 +29,8 @@ Ten projekt implementuje równoległe wyszukiwanie prawie binarne w języku Kotl
     - Program zapyta, czy chcesz utworzyć losowy plik. Odpowiedz `tak`.
     - Podaj ścieżkę do zapisu pliku.
     - Podaj nazwę pliku.
+    - Podaj początek zakresu losowanych liczb
+    - Podaj koniec zakresu losowanych liczb
     - Podaj minimalną długość pliku.
 
 2. **Analiza istniejącego pliku**:
@@ -38,3 +40,10 @@ Ten projekt implementuje równoległe wyszukiwanie prawie binarne w języku Kotl
     - Podaj liczbę wątków do użycia.
 
 ### Przykładowy wynik
+
+```plaintext
+Czy chcesz utworzyć losowy plik? (tak/nie): nie
+Podaj ścieżkę do pliku: D:\oblicznia_rownolegle\testfile
+Co chcesz znaleźć: 99
+Podaj liczbę wątków: 8
+Elementy znalezione na indeksach: 15, 121, 215, 229,
