@@ -1,5 +1,8 @@
 import kotlinx.coroutines.*
+import java.io.File
 import kotlin.math.min
+import kotlin.random.Random
+import kotlin.system.exitProcess
 
 suspend fun parallelAlmostBinarySearch(arr: IntArray, target: Int, numThreads: Int): Int? = coroutineScope {
     val segmentSize = (arr.size + numThreads - 1) / numThreads
@@ -33,15 +36,72 @@ fun almostBinarySearch(arr: IntArray, target: Int, start: Int, end: Int): Int? {
     return null
 }
 
-fun main() = runBlocking {
-    val arr = intArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
-    val target = 7
-    val numThreads = 4
+fun createRandomFile(filePath: String, fileName: String, minLength: Int) {
+    val file = File(filePath, fileName)
+    file.bufferedWriter().use { out ->
+        repeat(minLength) {
+            out.write("${Random.nextInt(0, 1000)}\n")
+        }
+    }
+    println("Plik został utworzony: ${file.absolutePath}")
+}
 
-    val result = parallelAlmostBinarySearch(arr, target, numThreads)
-    if (result != null) {
-        println("Element found at index: $result")
+fun main() = runBlocking {
+    print("Czy chcesz utworzyć losowy plik? (tak/nie): ")
+    val createFile = readLine()?.toLowerCase() == "tak"
+
+    if (createFile) {
+        print("Podaj ścieżkę do zapisu pliku: ")
+        val filePath = readLine() ?: run {
+            println("Nie podano ścieżki do zapisu pliku.")
+            exitProcess(1)
+        }
+
+        print("Podaj nazwę pliku: ")
+        val fileName = readLine() ?: run {
+            println("Nie podano nazwy pliku.")
+            exitProcess(1)
+        }
+
+        print("Podaj minimalną długość pliku (ilość linii): ")
+        val minLength = readLine()?.toIntOrNull() ?: run {
+            println("Podano nieprawidłową długość.")
+            exitProcess(1)
+        }
+
+        createRandomFile(filePath, fileName, minLength)
     } else {
-        println("Element not found")
+        print("Podaj ścieżkę do pliku: ")
+        val filePath = readLine() ?: run {
+            println("Nie podano ścieżki do pliku.")
+            exitProcess(1)
+        }
+
+        val file = File(filePath)
+        if (!file.exists() || !file.isFile) {
+            println("Plik nie istnieje.")
+            exitProcess(1)
+        }
+
+        val arr = file.readLines().mapNotNull { it.toIntOrNull() }.toIntArray()
+
+        print("Co chcesz znaleźć: ")
+        val target = readLine()?.toIntOrNull() ?: run {
+            println("Podano nieprawidłową wartość do wyszukania.")
+            exitProcess(1)
+        }
+
+        print("Podaj liczbę wątków: ")
+        val numThreads = readLine()?.toIntOrNull() ?: run {
+            println("Podano nieprawidłową liczbę wątków.")
+            exitProcess(1)
+        }
+
+        val result = parallelAlmostBinarySearch(arr, target, numThreads)
+        if (result != null) {
+            println("Element znaleziony na indeksie: $result")
+        } else {
+            println("Element nie znaleziony")
+        }
     }
 }
