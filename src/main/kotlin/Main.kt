@@ -3,6 +3,7 @@ import java.io.File
 import kotlin.math.min
 import kotlin.random.Random
 import kotlin.system.exitProcess
+import kotlin.system.measureTimeMillis
 
 data class IndexedValue(val value: Int, val index: Int)
 
@@ -112,7 +113,12 @@ fun main() = runBlocking {
             exitProcess(1)
         }
 
-        val arr = file.readLines().mapIndexedNotNull { index, line -> line.toIntOrNull()?.let { IndexedValue(it, index) } }.sortedBy { it.value }
+        //val arr = file.readLines().mapIndexedNotNull { index, line -> line.toIntOrNull()?.let { IndexedValue(it, index) } }.sortedBy { it.value }
+        val arr = file.useLines { lines ->
+            lines.mapIndexedNotNull { index, line -> line.toIntOrNull()?.let { IndexedValue(it, index) } }
+                .sortedBy { it.value }
+                .toList()
+        }
 
         print("Co chcesz znaleźć: ")
         val target = readLine()?.toIntOrNull() ?: run {
@@ -126,11 +132,15 @@ fun main() = runBlocking {
             exitProcess(1)
         }
 
-        val results = parallelBinarySearch(arr, target, numThreads)
-        if (results.isNotEmpty()) {
-            println("Elementy znalezione na indeksach: ${results.joinToString(", ")}")
-        } else {
-            println("Elementy nie znalezione")
+        val timeTaken = measureTimeMillis {
+            val results = parallelBinarySearch(arr, target, numThreads)
+            if (results.isNotEmpty()) {
+                println("Elementy znalezione na indeksach: ${results.joinToString(", ")}")
+            } else {
+                println("Elementy nie znalezione")
+            }
         }
+
+        println("Czas wyszukiwania: $timeTaken ms")
     }
 }
